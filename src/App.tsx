@@ -1,18 +1,15 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+
+import "./App.css";
+import FullscreenYouTubeVideo from "./components/FullscreenYouTubeVideo";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
-      <div> 
-      </div>
-      <h1>CANARY DIGITAL - DEMO</h1> 
+      <FullscreenYouTubeVideo />
+
+     
     </>
-  )
+  );
 }
 
-export default App
+export default App;
