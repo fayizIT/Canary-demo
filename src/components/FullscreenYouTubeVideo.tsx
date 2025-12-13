@@ -11,7 +11,7 @@ const FullscreenYouTubeVideo: React.FC = () => {
     <div style={styles.container} onClick={enableSound}>
       <iframe
         style={styles.iframe}
-        src={`https://www.youtube.com/embed/9eWEBlArDeA?autoplay=1&mute=${unmuted ? 0 : 1}&controls=0&playsinline=1&loop=1&playlist=9eWEBlArDeA&modestbranding=1`}
+        src={`https://www.youtube.com/embed/g5JY2TONktY?autoplay=1&mute=${unmuted ? 0 : 1}&controls=0&playsinline=1&loop=1&playlist=g5JY2TONktY&modestbranding=1`}
         title="YouTube video"
         allow="autoplay"
         allowFullScreen
