@@ -98,7 +98,7 @@ const FullscreenYouTubeVideo: React.FC = () => {
   useEffect(() => {
     // Keyboard controls (desktop only)
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (isMobile) return; // Disable keyboard controls on mobile
+      if (isMobile) return;
       
       switch (e.key) {
         case "ArrowRight":
@@ -155,7 +155,6 @@ const FullscreenYouTubeVideo: React.FC = () => {
         }
       }, 3000);
 
-      // Handle dragging
       handleMouseMove(e);
     };
 
@@ -174,7 +173,6 @@ const FullscreenYouTubeVideo: React.FC = () => {
       window.addEventListener("mousemove", handleMouseMoveForCursor);
       window.addEventListener("mouseup", handleMouseUp);
     } else {
-      // Mobile controls always show cursor
       setShowCursor(true);
     }
 
@@ -233,185 +231,77 @@ const FullscreenYouTubeVideo: React.FC = () => {
 
   return (
     <div
-      style={{
-        ...styles.container,
-        cursor: showCursor || isMobile ? "default" : "none",
-      }}
+      className={`fixed top-0 left-0 w-screen h-screen overflow-hidden -z-10 bg-black ${
+        showCursor || isMobile ? "cursor-default" : "cursor-none"
+      }`}
       onClick={enableSound}
     >
+      {/* YouTube iframe */}
       <iframe
         ref={iframeRef}
-        style={styles.iframe}
-        src={`https://www.youtube.com/embed/g5JY2TONktY?autoplay=1&mute=${
+        className="absolute top-1/2 left-1/2 w-[120vw] h-[120vh] -translate-x-1/2 -translate-y-1/2 pointer-events-none border-none"
+src={`https://www.youtube.com/embed/g5JY2TONktY?autoplay=1&mute=${
           unmuted ? 0 : 1
         }&controls=0&playsinline=1&loop=1&playlist=g5JY2TONktY&modestbranding=1&enablejsapi=1`}
         title="YouTube video"
         allow="autoplay"
         allowFullScreen
-      ></iframe>
+      />
 
+      {/* Tap to enable sound */}
       {!unmuted && (
-        <div style={{
-          ...styles.tapText,
-          fontSize: isMobile ? '14px' : '18px',
-          bottom: isMobile ? '80px' : '100px',
-          padding: isMobile ? '6px 12px' : '8px 16px',
-        }}>
-          🔊 Tap to enable sound
-        </div>
+       <div
+  className={`absolute left-1/2 -translate-x-1/2 text-white bg-black/70 rounded-md text-center z-10 ${
+    isMobile 
+      ? "bottom-20 text-sm px-3 py-1.5" 
+      : "bottom-25 text-lg px-4 py-2"
+  }`}
+>
+  🔊 Tap to enable sound
+</div>
       )}
 
-      {/* Progress Bar */}
+      {/* Progress Bar Container */}
       <div
-        style={{
-          ...styles.progressContainer,
-          opacity: showCursor || isMobile ? 1 : 0,
-          transition: "opacity 0.3s ease",
-          pointerEvents: "auto",
-          bottom: isMobile ? '15px' : '30px',
-          width: isMobile ? '90%' : '80%',
-          maxWidth: isMobile ? '100%' : '600px',
-        }}
+        className={`absolute left-1/2 -translate-x-1/2 pointer-events-auto z-10 transition-opacity duration-300 ${
+          showCursor || isMobile ? "opacity-100" : "opacity-0"
+        } ${
+          isMobile 
+            ? "bottom-3.75 w-[90%] max-w-full" 
+            : "bottom-17.5 w-[80%] max-w-150"
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Progress Bar */}
         <div
           ref={progressBarRef}
-          style={{
-            ...styles.progressBar,
-            cursor: "pointer",
-            height: isMobile ? '8px' : '6px',
-          }}
+          className={`relative w-full bg-white/30 rounded overflow-visible touch-none cursor-pointer ${
+            isMobile ? "h-2" : "h-1.5"
+          }`}
           onMouseDown={handleMouseDown}
           onTouchStart={handleTouchStart}
           onClick={handleProgressBarClick}
         >
+          {/* Progress Fill */}
           <div
-            style={{
-              ...styles.progressFill,
-              width: `${percentage}%`,
-            }}
-          ></div>
-          {/* Draggable circle */}
+            className="h-full bg-red-600 transition-all duration-100 ease-linear rounded"
+            style={{ width: `${percentage}%` }}
+          />
+          
+          {/* Draggable Circle */}
           <div
-            style={{
-              ...styles.progressCircle,
-              left: `${percentage}%`,
-              width: isMobile ? '18px' : '14px',
-              height: isMobile ? '18px' : '14px',
-            }}
-          ></div>
+            className={`absolute top-1/2 -translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full border-2 border-white transition-all duration-100 ease-linear cursor-grab touch-none ${
+              isMobile ? "w-4.5 h-4.5" : "w-3.5 h-3.5"
+            }`}
+            style={{ left: `${percentage}%` }}
+          />
         </div>
       </div>
 
-      {/* Keyboard hints - only show on desktop */}
-      {!isMobile && (
-        <div
-          style={{
-            ...styles.hint,
-            opacity: showCursor ? 1 : 0,
-            transition: "opacity 0.3s ease",
-          }}
-        >
-          ⌨️ ← → (±10s) | ↑ ↓ (±30s) | 🖱️ Scroll (±10s) | Drag progress bar
-        </div>
-      )}
-
-      {/* Mobile hint */}
-      {isMobile && (
-        <div
-          style={{
-            ...styles.hint,
-            fontSize: '12px',
-            padding: '6px 12px',
-            top: '15px',
-          }}
-        >
-          👆 Tap & drag progress bar to seek
-        </div>
-      )}
+     
+      
     </div>
   );
-};
-
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100vw",
-    height: "100vh",
-    overflow: "hidden",
-    zIndex: -1,
-    backgroundColor: "#000",
-  },
-  iframe: {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    width: "120vw",
-    height: "120vh",
-    transform: "translate(-50%, -50%)",
-    pointerEvents: "none",
-    border: "none",
-  },
-  tapText: {
-    position: "absolute",
-    left: "50%",
-    transform: "translateX(-50%)",
-    color: "#fff",
-    background: "rgba(0,0,0,0.7)",
-    padding: "8px 16px",
-    borderRadius: "6px",
-    textAlign: "center",
-    zIndex: 10,
-  },
-  progressContainer: {
-    position: "absolute",
-    left: "50%",
-    transform: "translateX(-50%)",
-    zIndex: 10,
-  },
-  progressBar: {
-    position: "relative",
-    width: "100%",
-    background: "rgba(255,255,255,0.3)",
-    borderRadius: "4px",
-    overflow: "visible",
-    touchAction: "none",
-  },
-  progressFill: {
-    height: "100%",
-    background: "#ff0000",
-    transition: "width 0.1s ease",
-    borderRadius: "4px",
-  },
-  progressCircle: {
-    position: "absolute",
-    top: "50%",
-    transform: "translate(-50%, -50%)",
-    background: "#ff0000",
-    borderRadius: "50%",
-    border: "2px solid #fff",
-    transition: "left 0.1s ease",
-    cursor: "grab",
-    touchAction: "none",
-  },
-  hint: {
-    position: "absolute",
-    left: "50%",
-    transform: "translateX(-50%)",
-    color: "#fff",
-    fontSize: "14px",
-    background: "rgba(0,0,0,0.7)",
-    padding: "8px 16px",
-    borderRadius: "6px",
-    whiteSpace: "nowrap",
-    zIndex: 10,
-    textAlign: "center",
-    maxWidth: "90%",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  },
 };
 
 export default FullscreenYouTubeVideo;
